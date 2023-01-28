@@ -1,0 +1,35 @@
+{
+    "name": "Paste Image Clipboard",
+    "version": "1.0.0",
+    "description": "Paste the image that is on the clipboard on a file field",
+    "manifest_version": 3,
+    "author": "Greogory Garcia",
+    "background": {
+        "service_worker": "script.js"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "Paste Image Clipboard"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "file:///*"
+            ],
+            "js": [
+                "jquery.min.js"
+            ]
+        }
+    ],
+    "host_permissions": [
+        "https://*/*"
+    ],
+    "permissions": [
+        "contextMenus",
+        "activeTab",
+        "tabs",
+        "scripting",
+        "clipboardWrite",
+        "clipboardRead"
+    ]
+}
