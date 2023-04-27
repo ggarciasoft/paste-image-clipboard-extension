@@ -1,15 +1,3 @@
-function doStuffWithDOM() {
-    var btnArchives = document.querySelectorAll("button[aria-label^='Archivados']");
-    btnArchives[0].click();
-    setTimeout(() => {
-        document.querySelectorAll("span[title^='Remote Team']")[0]
-            .parentElement
-            .parentElement
-            .parentElement
-            .parentElement.click()
-    }, 2000);
-}
-
 function rightClickHandler(obj) {
     console.log("Test log");
     chrome.tabs.query({ url: "https://web.whatsapp.com/" }, function (tabs) {
