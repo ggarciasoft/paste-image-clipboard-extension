@@ -1,53 +1,43 @@
-function doStuffWithDOM() {
-    var btnArchives = document.querySelectorAll("button[aria-label^='Archivados']");
-    btnArchives[0].click();
-    setTimeout(() => {
-        document.querySelectorAll("span[title^='Remote Team']")[0]
-            .parentElement
-            .parentElement
-            .parentElement
-            .parentElement.click()
-    }, 2000);
-}
-
-function rightClickHandler(obj) {
-    console.log("Test log");
-    chrome.tabs.query({ url: "https://web.whatsapp.com/" }, function (tabs) {
-        var currTab = tabs[0];
-
-        chrome.scripting.executeScript({
-            target: { tabId: currTab.id },
-            func: doStuffWithDOM
-        });
-
-    });
-}
-
 function pasteImageFunc() {
-    let input = document.getElementsByClassName("photos-selector-input2");
-    if (input.length) {
+    function pasteImage(e) {
+        fileSelected = e.target.parentElement.querySelector("input[type=file]")
         navigator.clipboard.read().then(clipboardItems => {
             for (const clipboardItem of clipboardItems) {
                 for (const type of clipboardItem.types) {
-                    debugger;
                     clipboardItem.getType(type).then(blob => {
                         let file = new File([blob], "img.jpg", { type: "image/jpeg", lastModified: new Date().getTime() });
                         let container = new DataTransfer();
                         container.items.add(file);
-                        let fileInputElement = input[0];
-                        fileInputElement.files = container.files;
-                        fileInputElement.dispatchEvent(new Event('change', { 'bubbles': true }))
+                        fileSelected.files = container.files;
+                        fileSelected.dispatchEvent(new Event('change', { 'bubbles': true }));
+
+                        let inputPointers = document.querySelectorAll("span.input-pointer");
+                        inputPointers.forEach(inputPointer => inputPointer.parentElement.removeChild(inputPointer));
                     });
                 }
             }
         });
     }
+    let inputs = document.querySelectorAll("input[type=file]");
+    if (inputs.length > 1) {
+        inputs.forEach(input => {
+            var pointer = document.createElement("span");
+            pointer.innerText = "Click here to paste";
+            pointer.setAttribute("style", "border: solid 1px #000; color: #000; cursor: pointer;");
+            pointer.className = "input-pointer";
+            pointer.onclick = pasteImage;
+            input.parentElement.append(pointer);
+        });
+        return;
+    }
+    else if (inputs.length == 1) {
+        pasteImage(inputs[0]);
+    }
 }
 
-function pasteImage(obj) {
-    chrome.tabs.query({ index: 0 }, function (tabs) {
+function pasteImageListener() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
         var currTab = tabs[0];
-
         chrome.scripting.executeScript({
             target: { tabId: currTab.id },
             func: pasteImageFunc
@@ -59,8 +49,8 @@ function pasteImage(obj) {
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: "1",
-        title: "Bitly Short Link",
+        title: "Paste Image",
         contexts: ["all"]  // ContextType
     });
-    chrome.contextMenus.onClicked.addListener(pasteImage);
+    chrome.contextMenus.onClicked.addListener(pasteImageListener);
 });

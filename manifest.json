@@ -11,16 +11,6 @@
         "default_popup": "index.html",
         "default_title": "Paste Image Clipboard"
     },
-    "content_scripts": [
-        {
-            "matches": [
-                "file:///*"
-            ],
-            "js": [
-                "jquery.min.js"
-            ]
-        }
-    ],
     "host_permissions": [
         "https://*/*"
     ],
